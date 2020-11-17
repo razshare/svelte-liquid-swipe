@@ -1,21 +1,27 @@
 <script>
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
 
-import { cubicOut, circOut } from 'svelte/easing';
+import { cubicOut } from 'svelte/easing';
 import { spring,tweened } from "svelte/motion";
 
 export let width = 500;
 export let height = 500;
 export let step = 10;
 export let position;
-export let expansion = 50;
 export let triggerValue = 350;
-export let duration = 400;
+export let precision = 3;
+export let slideDuration = 1000;
+export let slideEasing = cubicOut;
+export let buttonSize = 10;
+export let veilExpansionStiffness = .03;
+export let veilExpansionDamping = .1;
+export let buttonExpansionStiffness = .1;
+export let buttonExpansionDamping = .2;
+
 
 const IDLE = 0, START_SLIDING = 1, SLIDING = 2;
 let status = IDLE;
-let mousedown = false;
-let svg;
+let active = false;
 let originalTipPosition;
 
 let pathElement;
@@ -33,33 +39,30 @@ async function onBoundsChange(width,height){
 
 $:onBoundsChange(width,height);
 
-function init(e){
+function init(){
 	position = { x: 70, y: height-200 };
 	originalTipPosition = position;
 
 	slide = tweened(0, {
-		duration: duration,
-		easing: cubicOut
+		duration: slideDuration,
+		easing: slideEasing
 	});
 
-	
-
-	svg = e;
-	
-
 	size = spring( 
-		{expansion},
+		{buttonSize},
 		{
-			stiffness: 0.1,
-			damping: 0.2
+			stiffness: veilExpansionStiffness
+			,
+			damping: veilExpansionDamping
 		}
 	);
 
 	tip = spring(
 		originalTipPosition,
 		{
-			stiffness: 0.1,
-			damping: 0.2
+			stiffness: buttonExpansionStiffness
+			,
+			damping: buttonExpansionDamping
 		}
 	);
 	
@@ -71,15 +74,14 @@ let deltaLeft = {
 	base: 0
 };
 
-
+let rendering = false;
 function render(){
-	
+	rendering = true;
 	let x = $tip.x < originalTipPosition.x?originalTipPosition.x:$tip.x;
 	let y = height + x - $tip.y;
 	let s;
 
 	
-	let coords = `M-${step},0`;
 	if(
 		status < START_SLIDING
 		&& x > triggerValue
@@ -91,59 +93,62 @@ function render(){
 	}
 
 	if(status >= START_SLIDING){
-		$size = {
-			expansion: $size.expansion + x
-		};
+		size.set({
+			buttonSize: $size.buttonSize + x
+		});
 		deltaLeft.slide = x;
 		deltaLeft.base = $slide;
 	}
 		
-	s = $size.expansion + x * 0.5;
+	s = $size.buttonSize + x * 0.5;
 
 
 	// start drawing
 	let nx = 0;
 	let ny = height + x;
-	
+	let coords = `M-${step},0`;
 	for (ny=height + x; ny >= 0; ny -= step){
 		nx = x/Math.pow(Math.E, (Math.pow(ny-y, 2))/(2*s*s));
-		coords += ` L${(deltaLeft.base + nx).toFixed(2)},${(height+x-ny).toFixed(2)}`
+		coords += ` L${(deltaLeft.base + nx).toFixed(precision)},${(height+x-ny).toFixed(precision)}`
 	}
-
 	coords +=` L-${step},${height + x}`;
 	//finish drawing
+
 	path = coords;
+	rendering = false;
 	requestAnimationFrame(render);
+}
+
+function activate(e){
+	if(e.target === pathElement)
+		active = true
+}
+
+function deactivate(e){
+	active = false;
+	if(status === IDLE)
+		tip.set(originalTipPosition)
+}
+
+function watch(e,x,y){
+	if(active && status === IDLE && !rendering)
+		tip.set({ x, y })
 }
 </script>
 
 {#if mounted}
-<svg
-	use:init
-	{width}
-	{height}
-	viewBox="0 0 {width} {height}"
-	xmlns="http://www.w3.org/2000/svg"
-	on:mousedown={(e)=>{
-		if(e.target === pathElement)
-			mousedown=true
-	}}
-	on:mouseup={()=>{
-		mousedown=false;
-		if(status === IDLE)
-			$tip = originalTipPosition
-	}}
-	on:mousemove={e=>{
-		//if(mousedown && !sliding)
-		if(mousedown && status === IDLE)
-			$tip = {
-				x:e.clientX,
-				y:e.clientY
-			}
-	}}
-	>
-	<path bind:this={pathElement} d={path} fill="#000" stroke="black">
-		hello
-	</path>
-</svg>
+	<svg
+		use:init
+		{width}
+		{height}
+		viewBox="0 0 {width} {height}"
+		xmlns="http://www.w3.org/2000/svg"
+		on:mousedown={activate}
+		on:mouseup={deactivate}
+		on:mousemove={(e)=>watch(e,e.clientX,e.clientY)}
+		>
+		<path bind:this={pathElement} d={path} fill="#000" stroke="black">
+			hello
+		</path>
+	</svg>
 {/if}
