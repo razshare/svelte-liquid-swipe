@@ -1,38 +1,60 @@
-<script lang="ts">
+<script>
+import { onMount, tick } from 'svelte';
+
 import { cubicOut, circOut } from 'svelte/easing';
 import { spring,tweened } from "svelte/motion";
 
-export let width:number = 500;
-export let height:number = 500;
-export let position:Record<string,number> = { x: 50, y: height + 150 };
-export let expansion:number = 100;
-export let triggerValue:number = 350;
-export let step:number = 10;
-export let duration:number = 1000;
-export let stiffness:number = 0.05;
-export let damping:number = 0.05;
+export let width = 500;
+export let height = 500;
+export let step = 10;
+export let position;
+export let expansion = 50;
+export let triggerValue = 350;
+export let duration = 400;
 
-let sliding:boolean = false;
-let mousedown:boolean = false;
-let ctx:CanvasRenderingContext2D;
-let cv:HTMLCanvasElement;
-let originalTipPosition:Record<string,number>;
+const IDLE = 0, START_SLIDING = 1, SLIDING = 2;
+let status = IDLE;
+let mousedown = false;
+let svg;
+let originalTipPosition;
 
-let slide = tweened(0, {
-	duration: duration,
-	easing: circOut
-});
-
-let tip = spring( originalTipPosition, { stiffness, damping } );
-let size = spring( {expansion}, { stiffness, damping } );
+let pathElement;
+let slide;
+let tip;
+let size;
 
 let path = "";
+let mounted = true;
+async function onBoundsChange(width,height){
+	mounted = false;
+	await tick();
+	mounted = true;
+}
 
-function init(canvas:HTMLCanvasElement):void{
-	cv = canvas;
-	ctx = cv.getContext("2d");
+$:onBoundsChange(width,height);
+
+function init(e){
+	position = { x: 70, y: height-200 };
 	originalTipPosition = position;
+
+	slide = tweened(0, {
+		duration: duration,
+		easing: cubicOut
+	});
+
 	
+
+	svg = e;
+	
+
+	size = spring( 
+		{expansion},
+		{
+			stiffness: 0.1,
+			damping: 0.2
+		}
+	);
+
 	tip = spring(
 		originalTipPosition,
 		{
@@ -40,6 +62,7 @@ function init(canvas:HTMLCanvasElement):void{
 			damping: 0.2
 		}
 	);
+	
 	requestAnimationFrame(render);
 }
 
@@ -49,62 +72,78 @@ let deltaLeft = {
 };
 
 
-let lastX:number=-1;
-let moving = false;
-function render():void{
-	ctx.beginPath();
-	ctx.clearRect(0,0,cv.width,cv.height);
+function render(){
 	
-	let x:number = $tip.x;
-	let y:number = cv.height - $tip.y;
-	let s:number;
-	if(!sliding && x > triggerValue){
-		sliding = true;
-		$slide = cv.width;
+	let x = $tip.x < originalTipPosition.x?originalTipPosition.x:$tip.x;
+	let y = height + x - $tip.y;
+	let s;
+
+	
+	let coords = `M-${step},0`;
+	if(
+		status < START_SLIDING
+		&& x > triggerValue
+	) status = START_SLIDING;
+
+	if(status === START_SLIDING){
+		status = SLIDING;
+		slide.set(width);
 	}
 
-	if(sliding){
+	if(status >= START_SLIDING){
 		$size = {
 			expansion: $size.expansion + x
 		};
 		deltaLeft.slide = x;
 		deltaLeft.base = $slide;
 	}
-	
 		
-	s = $size.expansion;
+	s = $size.expansion + x * 0.5;
 
 
 	// start drawing
-	let nx:number;
-	for (let ny=0; ny < cv.height; ny += step){
-		nx = x/Math.pow(Math.E, (Math.pow(ny-y, 2))/(2*s*s));
-		ctx.lineTo(deltaLeft.base + nx,cv.height-ny);
-		ctx.stroke();
-	}
-	ctx.closePath();
-	//finish drawing
+	let nx = 0;
+	let ny = height + x;
 	
+	for (ny=height + x; ny >= 0; ny -= step){
+		nx = x/Math.pow(Math.E, (Math.pow(ny-y, 2))/(2*s*s));
+		coords += ` L${(deltaLeft.base + nx).toFixed(2)},${(height+x-ny).toFixed(2)}`
+	}
+
+	coords +=` L-${step},${height + x}`;
+	//finish drawing
+	path = coords;
 	requestAnimationFrame(render);
 }
 </script>
 
-<canvas 
-	use:init 
-	{height}
+{#if mounted}
+<svg
+	use:init
 	{width}
-	on:mousedown={()=>mousedown=true}
+	{height}
+	viewBox="0 0 {width} {height}"
+	xmlns="http://www.w3.org/2000/svg"
+	on:mousedown={(e)=>{
+		if(e.target === pathElement)
+			mousedown=true
+	}}
 	on:mouseup={()=>{
 		mousedown=false;
-		if(!sliding)
+		if(status === IDLE)
 			$tip = originalTipPosition
 	}}
 	on:mousemove={e=>{
 		//if(mousedown && !sliding)
-		if(mousedown && !sliding)
+		if(mousedown && status === IDLE)
 			$tip = {
 				x:e.clientX,
 				y:e.clientY
 			}
 	}}
-></canvas>
+	>
+	<path bind:this={pathElement} d={path} fill="#000" stroke="black">
+		hello
+	</path>
+</svg>
+{/if}
