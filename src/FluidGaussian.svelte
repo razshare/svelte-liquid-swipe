@@ -1,24 +1,32 @@
 <script lang="ts">
-import { spring } from "svelte/motion";
-export const LEFT:number = 0;
-export const RIGHT:number = 1;
-export const TOP:number = 2;
-export const BOTTOM:number = 3;
+import { cubicOut, circOut } from 'svelte/easing';
+import { spring,tweened } from "svelte/motion";
+
 export let width:number = 500;
 export let height:number = 500;
-export let orientation:number = LEFT;
-export let position:Record<string,number> = { x: 50, y: 250 };
-export let triggerValue:number = 250;
-export let step:number = 15;
-
+export let position:Record<string,number> = { x: 50, y: height + 150 };
+export let expansion:number = 100;
+export let triggerValue:number = 350;
+export let step:number = 10;
+export let duration:number = 1000;
+export let stiffness:number = 0.05;
+export let damping:number = 0.05;
 
 let sliding:boolean = false;
 let mousedown:boolean = false;
 let ctx:CanvasRenderingContext2D;
 let cv:HTMLCanvasElement;
-let size:number = 100;
 let originalTipPosition:Record<string,number>;
-let tip = spring( originalTipPosition, { stiffness: 0.1, damping: 0.2 } );
+
+let slide = tweened(0, {
+	duration: duration,
+	easing: circOut
+});
+
+let tip = spring( originalTipPosition, { stiffness, damping } );
+let size = spring( {expansion}, { stiffness, damping } );
+
+let path = "";
 
 function init(canvas:HTMLCanvasElement):void{
 	cv = canvas;
@@ -39,80 +47,43 @@ let deltaLeft = {
 	slide: 0,
 	base: 0
 };
-function renderLeft(x,y):void{
-	let nx:number;
-	for (let ny=0; ny < cv.height; ny += step){
-		nx = x/Math.pow(Math.E, (Math.pow(ny-y, 2))/(2*size*size));
-		ctx.lineTo(deltaLeft.base + nx,cv.height-ny);
-		ctx.stroke();
-	}
 
-	if(x >= triggerValue){
-		sliding = true;
-		deltaLeft.slide = x;
-	}
-	
-}
 
-function renderRight(x,y):void{
-
-	x = cv.width - x;
-
-	let nx:number;
-	for (let ny = 0; ny < cv.height; ny += step){
-		nx = cv.width - (x/Math.pow(Math.E, (Math.pow(ny-y, 2))/(2*size*size)));
-
-		ctx.lineTo(nx,cv.height-ny);
-		ctx.stroke();
-	}
-}
-
-function renderBottom(x,y):void{
-	let ny:number;
-	for (let nx = 0; nx < cv.width; nx += step){
-		ny = cv.height - (y/Math.pow(Math.E, (Math.pow(nx-x, 2))/(2*size*size)));
-
-		ctx.lineTo(nx,ny);
-		ctx.stroke();
-	} 
-}
-
-function renderTop(x,y):void{
-
-	y = cv.height - y;
-
-	let ny:number;
-	for (let nx = 0; nx < cv.width; nx += step){
-		ny = y/Math.pow(Math.E, (Math.pow(nx-x, 2))/(2*size*size));
-
-		ctx.lineTo(nx,ny);
-		ctx.stroke();
-	} 
-}
-
-//let lastX:number=-1,lastY:number=-1;
+let lastX:number=-1;
+let moving = false;
 function render():void{
 	ctx.beginPath();
 	ctx.clearRect(0,0,cv.width,cv.height);
 	
-
 	let x:number = $tip.x;
 	let y:number = cv.height - $tip.y;
+	let s:number;
+	if(!sliding && x > triggerValue){
+		sliding = true;
+		$slide = cv.width;
+	}
 
-	//if((lastX !== x || lastY !== y) || (lastX === -1 && lastY === -1)){
-		//lastX = x;
-		//lastY = y;
-		switch(orientation){
-			case LEFT: renderLeft(x,y); break;
-			case RIGHT: renderRight(x,y); break;
-			case TOP: renderTop(x,y); break;
-			case BOTTOM: renderBottom(x,y); break;
-		}
-	//}
-
-	ctx.closePath();
-
+	if(sliding){
+		$size = {
+			expansion: $size.expansion + x
+		};
+		deltaLeft.slide = x;
+		deltaLeft.base = $slide;
+	}
 	
+		
+	s = $size.expansion;
+
+
+	// start drawing
+	let nx:number;
+	for (let ny=0; ny < cv.height; ny += step){
+		nx = x/Math.pow(Math.E, (Math.pow(ny-y, 2))/(2*s*s));
+		ctx.lineTo(deltaLeft.base + nx,cv.height-ny);
+		ctx.stroke();
+	}
+	ctx.closePath();
+	//finish drawing
 	
 	requestAnimationFrame(render);
 }
@@ -125,12 +96,12 @@ function render():void{
 	on:mousedown={()=>mousedown=true}
 	on:mouseup={()=>{
 		mousedown=false;
-		//if(!sliding)
+		if(!sliding)
 			$tip = originalTipPosition
 	}}
 	on:mousemove={e=>{
 		//if(mousedown && !sliding)
-		if(mousedown)
+		if(mousedown && !sliding)
 			$tip = {
 				x:e.clientX,
 				y:e.clientY
