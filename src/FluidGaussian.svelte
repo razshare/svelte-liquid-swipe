@@ -40,7 +40,8 @@ async function onBoundsChange(width,height){
 $:onBoundsChange(width,height);
 
 function init(){
-	position = { x: 70, y: height-200 };
+	if(!position)
+		position = { x: 70, y: height-200 };
 	originalTipPosition = position;
 
 	slide = tweened(0, {
