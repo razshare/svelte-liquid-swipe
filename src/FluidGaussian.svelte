@@ -147,6 +147,11 @@ function watch(e,x,y){
 		on:mousedown={activate}
 		on:mouseup={deactivate}
 		on:mousemove={(e)=>watch(e,e.clientX,e.clientY)}
+
+		on:touchstart={activate}
+		on:touchend={deactivate}
+		on:touchcancel={deactivate}
+		on:touchmove={e=>watch(e,e.touches[0].clientX,e.touches[0].clientY)}
 		>
 		<path bind:this={pathElement} d={path} fill="#000" stroke="black">
 			hello
