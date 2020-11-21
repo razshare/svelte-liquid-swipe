@@ -9,7 +9,6 @@ let height;
 <FluidGaussian 
 	{width}
 	{height}
-	buttonExpansionDamping=0.2
 	onComplete={()=>{
 		console.log("completed!");
 	}}
