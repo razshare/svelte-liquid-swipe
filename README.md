@@ -46,4 +46,4 @@ Result
 
 <img src="https://razshare.dev/svelte-liquid-swipe/preview.gif" />
 
-Make sure yo set `overflow:hidden` on your wrapper for the best results.
+Make sure you set `overflow:hidden` on your wrapper for the best results.
