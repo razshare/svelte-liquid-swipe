@@ -47,3 +47,7 @@ Result
 <img src="https://razshare.dev/svelte-liquid-swipe/preview.gif" />
 
 Make sure you set `overflow:hidden` on your wrapper for the best results.
+
+# Notes
+
+### Looking for full project example? Checkout the [example branch](https://github.com/tncrazvan/svelte-liquid-swipe/tree/example).
