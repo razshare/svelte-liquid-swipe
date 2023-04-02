@@ -1,5 +1,11 @@
 # Usage
 
+Install with
+
+```sh
+npm i -D svelte-liquid-swipe
+```
+
 Import your `LiquidContainer` component
 
 ```html
