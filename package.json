@@ -1,6 +1,6 @@
 {
   "name": "svelte-liquid-swipe",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build && npm run package",
@@ -12,6 +12,10 @@
     "prettier": "prettier --write",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tncrazvan/svelte-liquid-swipe"
   },
   "author": {
     "email": "tangent.jotey@gmail.com",

@@ -37,7 +37,7 @@ Then add some components to your container
 </script>
 
 <div style="position:relative;width:600;height:800;overflow:hidden">
-    <LiquidContainer direction="right" {pages}/>
+    <LiquidContainer direction="right" components={pages}/>
 </div>
 ```
 
