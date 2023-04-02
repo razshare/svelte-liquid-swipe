@@ -1,49 +1,38 @@
-# Usage
+# create-svelte
 
-Import your `LiquidContainer` component
+Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
-```html
-<script>
-  import { LiquidContainer } from 'svelte-liquid-swipe'
-</script>
+## Creating a project
 
-<LiquidContainer />
+If you're seeing this, you've probably already done this step. Congrats!
+
+```bash
+# create a new project in the current directory
+npm create svelte@latest
+
+# create a new project in my-app
+npm create svelte@latest my-app
 ```
 
-The `LiquidContainer` component exposes a root element of `position:absolute`, meaning you'll have to wrap it inside your own `relative`, `fixed`, etc element in order to manage its size and position.
+## Developing
 
-Something like this
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-```html
-<script>
-  import { LiquidContainer } from 'svelte-liquid-swipe'
-</script>
+```bash
+npm run dev
 
-<div style="position:relative;width:600px;height:800px;overflow:hidden">
-  <LiquidContainer />
-</div>
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
 ```
 
-Then add some components to your container
+## Building
 
-```html
-<script>
-  import { LiquidContainer } from 'svelte-liquid-swipe'
-  import Page1 from 'page1.svelte'
-  import Page2 from 'page2.svelte'
-  import Page3 from 'page3.svelte'
-  import Page4 from 'page4.svelte'
+To create a production version of your app:
 
-  const pages = [Page1, Page2, Page3, Page4]
-</script>
-
-<div style="position:relative;width:600px;height:800px;overflow:hidden">
-  <LiquidContainer direction="right" components="{pages}" />
-</div>
+```bash
+npm run build
 ```
 
-Result
+You can preview the production build with `npm run preview`.
 
-<img src="https://razshare.dev/svelte-liquid-swipe/preview.gif" />
-
-Make sure you set `overflow:hidden` on your wrapper for the best results.
+> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
