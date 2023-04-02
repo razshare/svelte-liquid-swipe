@@ -18,6 +18,12 @@
     "name": "Razvan Tanase",
     "url": "https://razshare.dev"
   },
+  "keywords": [
+    "svelte",
+    "animation",
+    "typescript",
+    "transition"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
