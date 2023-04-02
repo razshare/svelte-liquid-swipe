@@ -22,13 +22,13 @@
   import GaussianSwipeFromRight from './gaussian-swipe-from-right.svelte'
 
   /**
-   * If set to `left`, the swiper will be place on the left side of the parent edge.
+   * If set to `left`, the swiper will be place on the left edge of the parent.
    *
-   * If set to `right`, the swiper will be place on the right side of the parent edge.
+   * If set to `right`, the swiper will be place on the right edge of the parent.
    *
    * Default value is `left`.
    */
-  export let side: 'left' | 'right' = 'left'
+  export let direction: 'left' | 'right' = 'left'
 
   /**
    * An array of components to display.
@@ -51,7 +51,7 @@
    */
   export let snap = 70
 
-  if (side === 'right') {
+  if (direction === 'right') {
     components = components.reverse()
   }
 
@@ -85,7 +85,7 @@
   {/if}
 {/each}
 
-{#if side === 'left'}
+{#if direction === 'left'}
   {#each components as component, i}
     <GaussianSwipeFromLeft
       bind:this={boundsLeft[i]}
@@ -107,14 +107,7 @@
       </div>
     </GaussianSwipeFromLeft>
   {/each}
-  <!-- {#key components}
-  <GaussianSwipeFromLeft {x} {y} {width} {height} {trigger} on:complete on:buttonmove>
-    <div class="next" slot="page">
-      <svelte:component this={components[1]} />
-    </div>
-  </GaussianSwipeFromLeft>
-  {/key} -->
-{:else if side === 'right'}
+{:else if direction === 'right'}
   {#each components as component, i}
     <GaussianSwipeFromRight
       bind:this={boundsRight[i]}
@@ -136,14 +129,4 @@
       </div>
     </GaussianSwipeFromRight>
   {/each}
-
-  <!-- {#key components}
-    <GaussianSwipeFromRight {x} {y} {width} {height} {trigger} on:complete on:buttonmove>
-      <div class="next" slot="page">
-        <slot name="next">
-          <svelte:component this={components[1]} />
-        </slot>
-      </div>
-    </GaussianSwipeFromRight>
-  {/key} -->
 {/if}
