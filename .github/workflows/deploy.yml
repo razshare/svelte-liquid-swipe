@@ -40,8 +40,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload entire repository
-          path: 'dist'
+          # Upload build directory
+          path: 'build'
 
   # Deployment job
   deploy:
