@@ -19,7 +19,7 @@ Something like this
   import { LiquidContainer } from 'svelte-liquid-swipe'
 </script>
 
-<div style="position:relative;width:600;height:800;overflow:hidden">
+<div style="position:relative;width:600px;height:800px;overflow:hidden">
   <LiquidContainer />
 </div>
 ```
@@ -37,7 +37,7 @@ Then add some components to your container
   const pages = [Page1, Page2, Page3, Page4]
 </script>
 
-<div style="position:relative;width:600;height:800;overflow:hidden">
+<div style="position:relative;width:600px;height:800px;overflow:hidden">
   <LiquidContainer direction="right" components="{pages}" />
 </div>
 ```
