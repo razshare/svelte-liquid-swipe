@@ -28,14 +28,19 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v1
 
-      - name: 🔧 Install packages
+      - name: install pnpm package manager
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.1.0
+
+      - name: 🔧 Install packages & run build
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'npm'
+          cache: 'pnpm'
       - run: |
-          npm ci
-          npm run build
+          pnpm install --frozen-lockfile
+          pnpm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
