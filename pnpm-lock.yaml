@@ -38,8 +38,8 @@ devDependencies:
     specifier: ^3.1.4
     version: 3.1.4(sass@1.60.0)(svelte@3.58.0)
   svelte-liquid-swipe:
-    specifier: ^1.0.5
-    version: 1.0.5(svelte@3.58.0)
+    specifier: ^1.0.10
+    version: 1.0.10(svelte@3.58.0)
   tslib:
     specifier: ^2.5.0
     version: 2.5.0
@@ -1583,8 +1583,8 @@ packages:
       svelte: 3.58.0
     dev: true
 
-  /svelte-liquid-swipe@1.0.5(svelte@3.58.0):
-    resolution: {integrity: sha512-xLYmO6LFy4SNlbY7RJtqSdOTx4YcaBKW8c6cFuobZZfcLSenTZD4/rKQsRMKY3DbC3kOQ9QxTAbo3ts8uWs+Ig==}
+  /svelte-liquid-swipe@1.0.10(svelte@3.58.0):
+    resolution: {integrity: sha512-0C4GxbikZSDStu9eXFgmu2Y4cKyzqKs6XZ+5nSC5LjHCFZQXtDcXC9/m1L0FE90df+TiXe84WhPiyTqr8AhA3A==}
     peerDependencies:
       svelte: ^3.54.0
     dependencies:
