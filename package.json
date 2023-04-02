@@ -1,6 +1,6 @@
 {
   "name": "svelte-liquid-swipe",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build && npm run package",
