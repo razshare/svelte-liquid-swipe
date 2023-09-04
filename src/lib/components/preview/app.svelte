@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import LiquidContainer from '$lib/components/liquid-container.svelte'
   import Page1 from '$lib/components/preview/page1.svelte'
   import Page2 from '$lib/components/preview/page2.svelte'

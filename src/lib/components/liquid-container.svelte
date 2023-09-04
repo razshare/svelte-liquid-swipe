@@ -17,7 +17,7 @@
   }
 </style>
 
-<script lang="ts">
+<script>
   import GaussianSwipeFromLeft from '$lib/components/gaussian-swipe-from-left.svelte'
   import GaussianSwipeFromRight from './gaussian-swipe-from-right.svelte'
 
@@ -27,15 +27,18 @@
    * If set to `right`, the swiper will be place on the right edge of the parent.
    *
    * Default value is `left`.
+   * @type {'left' | 'right'}
    */
-  export let direction: 'left' | 'right' = 'left'
+  export let direction = 'left'
 
   /**
    * An array of components to display.
    *
    * Default value is `[]`.
+   *
+   * @type {Array<ConstructorOfATypedSvelteComponent>}
    */
-  export let components: Array<ConstructorOfATypedSvelteComponent>
+  export let components
 
   /**
    * When the swiper is dragger past this value (in px), the container will transition and trigger `on:complete` at the end of the animation.
@@ -55,8 +58,10 @@
     components = components.reverse()
   }
 
-  let boundsLeft: Array<GaussianSwipeFromLeft> = []
-  let boundsRight: Array<GaussianSwipeFromRight> = []
+  /** @type {Array<GaussianSwipeFromLeft>} */
+  let boundsLeft = []
+  /** @type {Array<GaussianSwipeFromRight>} */
+  let boundsRight = []
 
   let width = 0
   let height = 0

@@ -50,15 +50,19 @@
   }
 </style>
 
-<script lang="ts">
+<script>
   import { createEventDispatcher, onMount } from 'svelte'
   import { cubicOut } from 'svelte/easing'
-  import { spring, tweened, type Spring, type Tweened } from 'svelte/motion'
+  import { spring, tweened } from 'svelte/motion'
 
-  export let width: number
-  export let height: number
-  export let x: number
-  export let y: number
+  /** @type {number} */
+  export let width
+  /** @type {number} */
+  export let height
+  /** @type {number} */
+  export let x
+  /** @type {number} */
+  export let y
   export let btnText = '<'
   export let btnColor = '#fff'
   export let btnBorderColor = 'rgba(255,255,255,0.5)'
@@ -92,30 +96,36 @@
   }
 
   let id = `clip-${uuid()}`
-  let status: typeof IDLE | typeof START_SLIDING | typeof SLIDING | typeof DONE = IDLE
+  /** @type {typeof IDLE | typeof START_SLIDING | typeof SLIDING | typeof DONE} */
+  let status = IDLE
   let active = false
 
-  let btn: HTMLDivElement
-  let slide: Tweened<number>
-  let tip: Spring<{
-    x: number
-    y: number
-  }>
-  let size: Spring<{
-    buttonSize: number
-  }>
-  let originalTipPosition: Tweened<{
-    x: number
-    y: number
-  }>
-  let path: string
-  let mounted: boolean
-  let btnOpacity: number
-  let base: number
-  let lastX: number
-  let lastY: number
-  let rendering: boolean
-  let currentAnimationFrameRequest: number
+  /** @type {HTMLDivElement} */
+  let btn
+  /** @type {import('svelte/motion').Tweened<number>} */
+  let slide
+  /** @type { import('svelte/motion').Spring<{x: number, y: number}>} */
+  let tip
+  /** @type { import('svelte/motion').Spring<{buttonSize: number}>} */
+  let size
+  /** @type { import('svelte/motion').Tweened<{x: number,y: number}>} */
+  let originalTipPosition
+  /** @type { string} */
+  let path
+  /** @type { boolean} */
+  let mounted
+  /** @type { number} */
+  let btnOpacity
+  /** @type { number} */
+  let base
+  /** @type { number} */
+  let lastX
+  /** @type { number} */
+  let lastY
+  /** @type { boolean} */
+  let rendering
+  /** @type { number} */
+  let currentAnimationFrameRequest
 
   function render() {
     if (DONE === status) return
@@ -149,7 +159,7 @@
       lastY !== undefined &&
       (x !== lastX || y !== lastY)
     ) {
-      emit('buttonmove', { x, y } as { x: number; y: number })
+      emit('buttonmove', { x, y })
     }
 
     s = $size.buttonSize + x * 0.5
@@ -189,7 +199,12 @@
     currentAnimationFrameRequest = requestAnimationFrame(render)
   }
 
-  export function init(x: number, y: number) {
+  /**
+   *
+   * @param {number} x
+   * @param {number} y
+   */
+  export function init(x, y) {
     if (currentAnimationFrameRequest !== 0) {
       cancelAnimationFrame(currentAnimationFrameRequest)
     }
@@ -232,16 +247,30 @@
     requestAnimationFrame(render)
   }
 
-  function activate(e: TouchEvent | MouseEvent) {
+  /**
+   *
+   * @param {TouchEvent | MouseEvent} e
+   */
+  function activate(e) {
     if (e.target === btn) active = true
   }
 
-  function deactivate(e: TouchEvent | MouseEvent) {
+  /**
+   *
+   * @param {TouchEvent | MouseEvent} e
+   */
+  function deactivate(e) {
     active = false
     if (status === IDLE) tip.set($originalTipPosition)
   }
 
-  function watch(e: TouchEvent | MouseEvent, x: number, y: number) {
+  /**
+   *
+   * @param { TouchEvent | MouseEvent} e
+   * @param {number} x
+   * @param {number} y
+   */
+  function watch(e, x, y) {
     if (active && status === IDLE && !rendering && (lastX !== x || lastY !== y)) {
       tip.set({ x: width - x, y })
       lastX = width - x
