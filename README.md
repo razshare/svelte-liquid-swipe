@@ -1,12 +1,6 @@
 # create-svelte
 
-Install with
-
-```sh
-npm i -D svelte-liquid-swipe
-```
-
-Import your `LiquidContainer` component
+Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
 ## Creating a project
 
@@ -41,10 +35,4 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-<img src="https://razshare.dev/svelte-liquid-swipe/preview.gif" />
-
-Make sure you set `overflow:hidden` on your wrapper for the best results.
-
-# Notes
-
-Looking for full project example? Checkout the [example branch](https://github.com/tncrazvan/svelte-liquid-swipe/tree/example).
+> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
