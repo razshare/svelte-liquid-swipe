@@ -9,6 +9,7 @@
 									  supported by Chrome, Edge, Opera and Firefox */
   }
   .wrapper {
+    pointer-events: none;
     position: absolute;
     left: 0;
     right: 0;
@@ -16,6 +17,7 @@
     bottom: 0;
   }
   .btn {
+    pointer-events: all;
     display: grid;
     justify-items: center;
     align-items: center;
@@ -281,6 +283,16 @@
   $: if (mounted) init(x, y)
 </script>
 
+<svelte:body
+  on:mousedown={activate}
+  on:mouseup={deactivate}
+  on:mousemove={e => watch(e, e.clientX, e.clientY)}
+  on:touchstart={activate}
+  on:touchend={deactivate}
+  on:touchcancel={deactivate}
+  on:touchmove={e => watch(e, e.touches[0].clientX, e.touches[0].clientY)}
+/>
+
 {#if mounted && enabled}
   <!-- useful for debugging purposes -->
   <!-- <div
@@ -298,16 +310,7 @@
       ($tip.x < $originalTipPosition.x ? $originalTipPosition.x : $tip.x) -
       55}<br />
   </div> -->
-  <div
-    class="wrapper"
-    on:mousedown={activate}
-    on:mouseup={deactivate}
-    on:mousemove={e => watch(e, e.clientX, e.clientY)}
-    on:touchstart={activate}
-    on:touchend={deactivate}
-    on:touchcancel={deactivate}
-    on:touchmove={e => watch(e, e.touches[0].clientX, e.touches[0].clientY)}
-  >
+  <div class="wrapper">
     <svg {width} {height} viewBox="0 0 {width} {height}">
       <clipPath {id}>
         <path d={path} fill="rgba(0,0,0,0.5)" stroke="black" />

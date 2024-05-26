@@ -19,7 +19,7 @@
 
 <script>
   import GaussianSwipeFromLeft from '$lib/components/gaussian-swipe-from-left.svelte'
-  import GaussianSwipeFromRight from './gaussian-swipe-from-right.svelte'
+  import GaussianSwipeFromRight from '$lib/components/gaussian-swipe-from-right.svelte'
 
   /**
    * If set to `left`, the swiper will be place on the left edge of the parent.
