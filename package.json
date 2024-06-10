@@ -29,6 +29,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"svelte-liquid-swipe": "^2.0.1"
+		"svelte-liquid-swipe": "^2.1.0"
 	}
 }
