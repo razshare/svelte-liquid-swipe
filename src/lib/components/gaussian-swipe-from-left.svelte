@@ -281,16 +281,27 @@
 
   onMount(() => (mounted = true))
   $: if (mounted) init(x, y)
+
+  /** @type {HTMLDivElement} */
+  let wrapper
+  let shiftY = 0
+  let shiftX = 0
+  $: if (wrapper) {
+    const rect = wrapper.getBoundingClientRect()
+    shiftY = rect.y
+    shiftX = rect.x
+  }
 </script>
 
 <svelte:body
   on:mousedown={activate}
   on:mouseup={deactivate}
-  on:mousemove={e => watch(e, e.clientX, e.clientY)}
+  on:mousemove={e => watch(e, e.clientX - shiftX, e.clientY - shiftY)}
   on:touchstart={activate}
   on:touchend={deactivate}
   on:touchcancel={deactivate}
-  on:touchmove={e => watch(e, e.touches[0].clientX, e.touches[0].clientY)}
+  on:touchmove={e =>
+    watch(e, e.touches[0].clientX - shiftX, e.touches[0].clientY - shiftY)}
 />
 
 {#if mounted && enabled}
@@ -310,7 +321,7 @@
       ($tip.x < $originalTipPosition.x ? $originalTipPosition.x : $tip.x) -
       55}<br />
   </div> -->
-  <div class="wrapper">
+  <div class="wrapper" bind:this={wrapper}>
     <svg {width} {height} viewBox="0 0 {width} {height}">
       <clipPath {id}>
         <path d={path} fill="rgba(0,0,0,0.5)" stroke="black" />
